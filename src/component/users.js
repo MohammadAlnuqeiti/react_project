@@ -14,12 +14,17 @@ function ListUser(){
     const [users,setUsers] = useState([]);
     const [pendingFriends,setpendingFriends] = useState([]);
     const [acceptrdFriends,setAcceptedFriends] = useState([]);
+    const [requestFriends,setRequestFriends] = useState([]);  
+    const [pendingRequest,setpendingRequest] = useState([]);
+    const [friends,setfriends] = useState([]);
+    const [requestFriend,setrequestFriend] = useState([]);
     const id = JSON.parse(localStorage.getItem('id'));
 
     useEffect(()=>{
         getUsers();
         getFriendsPending();
         getFriendsAccepted();
+        getFriendsRequest();
 
     },[]);
 
@@ -34,25 +39,53 @@ function ListUser(){
     }
 
 
-    //  pending عرض جميع طلبات الصداقة في حالة 
+    // اللي بعثهم المستخدم pending عرض جميع طلبات الصداقة في حالة 
     const getFriendsPending = () => {
 
         axios.get(`http://localhost:80/react_project/back_end/acceptFriend.php/${id}`)
         .then((respone)=>{
             console.log(respone.data);
+            let pendingRequest = respone.data.map((ele)=>{
+                return ele.friend_id
+            })
+            setpendingRequest(pendingRequest);
+            console.log(pendingRequest);
             setpendingFriends(respone.data)
         })
     }
     //   عرض جميع طلبات الصداقة الذين تمت الموافقة عليهم
 
+    
     const getFriendsAccepted = () => {
 
         axios.get(`http://localhost:80/react_project/back_end/friends.php/${id}`)
         .then((respone)=>{
             console.log(respone.data);
+            let friends = respone.data.map((ele)=>{
+                return ele.friend_id
+            })
+            console.log(friends);
+            setfriends(friends);
             setAcceptedFriends(respone.data)
         })
     }
+    // عرض طلبات الصداقة الخاصة بالمستخدم واللي لسا ما وافق عليهم
+
+    const getFriendsRequest = () => {
+
+        axios.get(`http://localhost:80/react_project/back_end/friendRequests.php/${id}`)
+        .then((respone)=>{
+            console.log(respone.data);
+            let requestFriend = respone.data.map((ele)=>{
+                return ele.user_id
+            })
+            console.log(requestFriend);
+            setrequestFriend(requestFriend);
+            setRequestFriends(respone.data)
+        })
+    }
+    
+
 
 
     //  pending وحالته بتكون friends  اضافة صديق جديد في جدول ال 
@@ -63,13 +96,14 @@ function ListUser(){
             console.log(respone.data);
             getUsers();
             getFriendsPending();
+            getFriendsRequest();
         })
 
 
         
     }
 
-    // status طلب الصداقة وتغيير ال 
+    // status الموافقة على طلب الصداقة وتغيير ال 
     const AcceptFriend = (friendId) => {
         let inputs = {user_id:id , friend_id:friendId};
         axios.put(`http://localhost:80/react_project/back_end/friends.php/edit`,inputs)
@@ -82,10 +116,35 @@ function ListUser(){
 
         
     }
+    
+    // الغاء ارسال طلب الصداقة
+    const removeRequest = (friendId) => {
+        let inputs = {user_id:id , friend_id:friendId};
+        axios.put(`http://localhost:80/react_project/back_end/removeRequest.php/edit`,inputs)
+        .then((respone)=>{
+            console.log(respone.data);
+            getFriendsPending();
+            getFriendsAccepted();
+        })
 
 
-    // عرض جميع طلبات الصداقة الذين تمت الموافقة عليهم
+        
+    }
 
+    // حذف الصداقة
+    const removeFriend = (friendId) => {
+        let inputs = {user_id:id , friend_id:friendId};
+        axios.put(`http://localhost:80/react_project/back_end/removeFriends.php`,inputs)
+        .then((respone)=>{
+            console.log(respone.data);
+            getFriendsPending();
+            getFriendsAccepted();
+            
+        })
+
+
+        
+    }
     
  
     return (
@@ -107,20 +166,58 @@ function ListUser(){
             <tbody>
 
                 {users.map((ele,index)=>{
+
+
+
             return(
                 <tr key={index}>
                     <td>{ele.id}</td>
                     <td>{ele.name}</td>
                     <td>{ele.email}</td>
-                    <td>{ele.phone}</td>
-                    <td>
-                        <Link>
-                            <Button variant="primary" onClick={()=>AddFriends(ele.id)}>Add</Button>
-                        </Link>
-                    </td>
+                    <td>{ele.phone}</td> 
+
+                    {(() => {
+                            if (pendingRequest.includes(ele.id) || friends.includes(ele.id) || requestFriend.includes(ele.id)){
+                                if(pendingRequest.includes(ele.id)){
+                                    return (
+                                        <td>
+                                            remove request
+                                    </td>
+                                    )
+
+                                }
+                                if(friends.includes(ele.id)){
+                                    return (
+                                        <td>
+                                            remove friends
+                                    </td>
+                                    )
+
+                                }
+                                if(requestFriend.includes(ele.id)){
+                                    return (
+                                        <td>
+                                            accept
+                                    </td>
+                                    )
+
+                                }
+                             
+                            }else{
+                                return ( 
+                                <td>
+                                    <Link>
+                                        <Button variant="primary" onClick={()=>AddFriends(ele.id)}>Add</Button>
+                                    </Link>
+                                </td>
+                                )
+                            }
+              
+            })()}
                 
                 </tr>
                 )})}
+    
             
             </tbody>
         </Table>
@@ -134,7 +231,7 @@ function ListUser(){
                     <th>Name</th>
                     <th>Email</th>
                     <th>mobile</th>
-                    <th>accept freind</th>
+                    <th>remove Request</th>
                 </tr>
             </thead>
             <tbody>
@@ -148,7 +245,7 @@ function ListUser(){
                     <td>{ele.phone}</td>
                     <td>
                         <Link>
-                            <Button variant="primary" onClick={()=>AcceptFriend(ele.friend_id)}>accept</Button>
+                            <Button variant="primary" onClick={()=>removeRequest(ele.friend_id)}>remove request</Button>
                         </Link>
                     </td>
                 
@@ -167,6 +264,7 @@ function ListUser(){
                     <th>Name</th>
                     <th>Email</th>
                     <th>mobile</th>
+                    <th>remove friends</th>
                 </tr>
             </thead>
             <tbody>
@@ -179,6 +277,46 @@ function ListUser(){
                     <td>{ele.name}</td>
                     <td>{ele.email}</td>
                     <td>{ele.phone}</td>
+                    <td>
+                        <Link>
+                            <Button variant="danger" onClick={()=>removeFriend(ele.friend_id)}>remove friends</Button>
+                        </Link>
+                    </td>
+                 
+                
+                </tr>
+                )})}
+            
+            </tbody>
+        </Table>
+      </div>
+        <h1>Request friends</h1>
+        <div className="container m-5">
+        <Table striped className="m-auto" style={{textAlign:"center"}}>
+            <thead>
+                <tr bg="primary">
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>mobile</th>
+                    <th>accept request</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {requestFriends.map((ele,index)=>{
+            return(
+
+                <tr key={index}>
+                    <td>{ele.user_id}</td>
+                    <td>{ele.name}</td>
+                    <td>{ele.email}</td>
+                    <td>{ele.phone}</td>
+                    <td>
+                        <Link>
+                            <Button variant="primary" onClick={()=>AcceptFriend(ele.user_id)}>accept</Button>
+                        </Link>
+                    </td>
                  
                 
                 </tr>

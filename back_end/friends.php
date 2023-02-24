@@ -83,8 +83,22 @@ switch($method){
         $stmt =$conn->prepare($sql);
         $status = "accepted";
         $stmt->bindParam(':status',   $status);
+        $stmt->bindParam(':user_id', $user->friend_id);
+        $stmt->bindParam(':friend_id', $user->user_id);
+        $stmt->execute();
+        //
+
+        $sql = "INSERT INTO friends ( id , user_id , friend_id , status ) VALUES ( null , :user_id , :friend_id ,:status)";
+        $stmt =$conn->prepare($sql);
+        $status = "accepted" ;
         $stmt->bindParam(':user_id', $user->user_id);
         $stmt->bindParam(':friend_id', $user->friend_id);
+        $stmt->bindParam(':status', $status);
+
+
+        //
+
+
         if($stmt->execute()){
             $response = ['status'=>1,'message'=>'Record updated successfully.'];
         }else{
@@ -97,10 +111,19 @@ switch($method){
 
         case "DELETE":
 
-            $sql = "DELETE  FROM users WHERE id = :id";
-            $path = explode('/',$_SERVER['REQUEST_URI']);
+
+            $user = json_decode(file_get_contents('php://input'));
+            print_r($user);break;
+
+            $sql = "DELETE  FROM friends WHERE user_id = :user_id and friend_id = :friend_id ";
+            
             $stmt =$conn->prepare($sql);
-            $stmt->bindParam(':id', $path[5]);
+            $stmt->bindParam(':user_id', $user->user_id);
+            $stmt->bindParam(':friend_id', $user->friend_id);
+            $stmt->execute();
+            $stmt =$conn->prepare($sql);
+            $stmt->bindParam(':user_id', $user->friend_id);
+            $stmt->bindParam(':friend_id', $user->user_id);
             $stmt->execute();
 
             // print_r($path);
@@ -109,7 +132,7 @@ switch($method){
                 $response = ['status'=>1,'message'=>'Record deleted successfully.'];
             }else{
                 $response = ['status'=>0,'message'=>'Failed to delete  record.'];
-    
+
             }
             echo json_encode( $response);
             break;

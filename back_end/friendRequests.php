@@ -13,12 +13,13 @@ $conn = $object->connect();
 
 
 $path = explode('/',$_SERVER['REQUEST_URI']);
-    // اللي بعثهم المستخدم pending عرض جميع طلبات الصداقة في حالة 
+
+// هون بجيب كل طلبات الصداقة اللي تم ارسالهم للمستخد واللي لسا ما وافق عليها مع بيانات الشخص اللي ارسال الطلب
 $sql = "SELECT *
 FROM users
 INNER JOIN friends
-ON users.id = friends.friend_id
-WHERE user_id = :id and status = :status";
+ON users.id = friends.user_id
+WHERE friend_id = :id and status = :status";
 $stmt =$conn->prepare($sql);
 $status = "pending" ;
 $stmt->bindParam(':status', $status);
