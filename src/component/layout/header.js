@@ -28,7 +28,7 @@ export default function Header() {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/user">Home</Nav.Link>
+            <Nav.Link href="/home">Home</Nav.Link>
             <Nav.Link href="/user/about">About</Nav.Link>
             <Nav.Link href="/user/contact">Contact</Nav.Link>
             <Nav.Link href="/users">users</Nav.Link>

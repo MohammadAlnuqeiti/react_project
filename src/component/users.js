@@ -111,6 +111,7 @@ function ListUser(){
             console.log(respone.data);
             getFriendsPending();
             getFriendsAccepted();
+            getFriendsRequest();
         })
 
 
@@ -165,7 +166,13 @@ function ListUser(){
             </thead>
             <tbody>
 
-                {users.map((ele,index)=>{
+                {users.filter(function(ele) {
+                    // لحتى ما اطبع المستخد اللي عامل تسجيل دخول
+                    if (ele.id === id) {
+                        return false; // skip
+                    }
+                    return true;
+                    }).map((ele,index)=>{
 
 
 
@@ -175,29 +182,36 @@ function ListUser(){
                     <td>{ele.name}</td>
                     <td>{ele.email}</td>
                     <td>{ele.phone}</td> 
+                
 
                     {(() => {
                             if (pendingRequest.includes(ele.id) || friends.includes(ele.id) || requestFriend.includes(ele.id)){
                                 if(pendingRequest.includes(ele.id)){
                                     return (
-                                        <td>
-                                            remove request
-                                    </td>
+
+                                        <Link>
+                                            <Button variant="primary" onClick={()=>removeRequest(ele.id)}>remove request</Button>
+                                        </Link>
+
                                     )
 
                                 }
                                 if(friends.includes(ele.id)){
                                     return (
                                         <td>
-                                            remove friends
-                                    </td>
+                                                <Link>
+                                                    <Button variant="danger" onClick={()=>removeFriend(ele.id)}>remove friends</Button>
+                                                </Link>
+                                        </td>
                                     )
 
                                 }
                                 if(requestFriend.includes(ele.id)){
                                     return (
                                         <td>
-                                            accept
+                                            <Link>
+                                                <Button variant="primary" onClick={()=>AcceptFriend(ele.id)}>accept</Button>
+                                            </Link>
                                     </td>
                                     )
 
@@ -222,7 +236,7 @@ function ListUser(){
             </tbody>
         </Table>
       </div>
-        <h1>pending friends</h1>
+        <h1>pending friends</h1><h2>number : {pendingFriends.length}</h2>
         <div className="container m-5">
         <Table striped className="m-auto" style={{textAlign:"center"}}>
             <thead>
@@ -256,6 +270,7 @@ function ListUser(){
         </Table>
       </div>
         <h1>accepted friends</h1>
+        <h2>number : {acceptrdFriends.length}</h2>
         <div className="container m-5">
         <Table striped className="m-auto" style={{textAlign:"center"}}>
             <thead>
@@ -291,6 +306,7 @@ function ListUser(){
         </Table>
       </div>
         <h1>Request friends</h1>
+        <h2>number : {requestFriends.length}</h2>
         <div className="container m-5">
         <Table striped className="m-auto" style={{textAlign:"center"}}>
             <thead>
