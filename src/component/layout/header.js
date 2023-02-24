@@ -32,6 +32,8 @@ export default function Header() {
             <Nav.Link href="/user/about">About</Nav.Link>
             <Nav.Link href="/user/contact">Contact</Nav.Link>
             <Nav.Link href="/users">users</Nav.Link>
+            <Nav.Link href="/groups">groups</Nav.Link>
+            <Nav.Link href="/myGroups">my groups</Nav.Link>
             {/* <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
               <NavDropdown.Item href="contact">Contact</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">

@@ -7,6 +7,8 @@ import SignupUser from './component/signup';
 import About from './publicUser/about';
 import Contact from './publicUser/contact';
 import ListUser from './component/users';
+import AllGroup from './component/allGroup';
+import MyGroup from './component/myGroup';
 import './App.css';
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
        <Routes>
           <Route path="/home" element={ <HomeUser/> } />
           <Route path="/users" element={ <ListUser/> } />
+          <Route path="/groups" element={ <AllGroup/> } />
+          <Route path="/myGroups" element={ <MyGroup/> } />
           <Route path="/user/about" element={ <About/> } />
           <Route path="/user/contact" element={ <Contact/> } />
           <Route path="/user/login" element={ <LoginUser/> } />
