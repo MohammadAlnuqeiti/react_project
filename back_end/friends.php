@@ -24,15 +24,21 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch($method){
     case "GET":
 
-        $sql = "SELECT * FROM users";
+        $sql = "SELECT * FROM friends";
         $path = explode('/',$_SERVER['REQUEST_URI']);
         
         // print_r($path);break;
-        if(isset($path[5])&&is_numeric($path[5])){
+        if(isset($path[4])&&is_numeric($path[4])){
 
-            $sql .= "   WHERE id = :id";
+            $sql = "SELECT *
+            FROM users
+            INNER JOIN friends
+            ON users.id = friends.friend_id
+            WHERE user_id = :id and status = :status";
             $stmt =$conn->prepare($sql);
-            $stmt->bindParam(':id', $path[5]);
+            $status = "accepted" ;
+            $stmt->bindParam(':status', $status);
+            $stmt->bindParam(':id', $path[4]);
 
             $stmt->execute();
             $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -52,14 +58,13 @@ switch($method){
 
     case "POST":
         $user = json_decode(file_get_contents('php://input'));
-        $sql = "INSERT INTO users ( id , name , email ,phone, password , created_at) VALUES ( null , :name, :email , :mobile,:password,:created_at)";
+        $sql = "INSERT INTO friends ( id , user_id , friend_id , status ) VALUES ( null , :user_id , :friend_id ,:status)";
         $stmt =$conn->prepare($sql);
-        $created_at = date('Y-m-d');
-        $stmt->bindParam(':name', $user->fullName);
-        $stmt->bindParam(':email', $user->email);
-        $stmt->bindParam(':mobile', $user->phone);
-        $stmt->bindParam(':password', $user->password);
-        $stmt->bindParam(':created_at', $created_at);
+        $status = "pending" ;
+        $stmt->bindParam(':user_id', $user->user_id);
+        $stmt->bindParam(':friend_id', $user->friend_id);
+        $stmt->bindParam(':status', $status);
+     
         if($stmt->execute()){
             $response = ['status'=>1,'message'=>'Record created successfully.'];
         }else{
@@ -73,17 +78,13 @@ switch($method){
         case "PUT":
 
         $user = json_decode(file_get_contents('php://input'));
-
-        // print_r($user);break;
-        $sql = "UPDATE  users SET  name = :name, email = :email , mobile = :mobile , password = :password, updated_at=:updated_at WHERE id = :id ";
+// print_r($user);break;
+        $sql = "UPDATE  friends SET  status = :status  WHERE user_id = :user_id and friend_id = :friend_id ";
         $stmt =$conn->prepare($sql);
-        $updated_at = date('Y-m-d');
-        $stmt->bindParam(':id', $user->id);
-        $stmt->bindParam(':name', $user->name);
-        $stmt->bindParam(':email', $user->email);
-        $stmt->bindParam(':mobile', $user->mobile);
-        $stmt->bindParam(':password', $user->password);
-        $stmt->bindParam(':updated_at', $updated_at);
+        $status = "accepted";
+        $stmt->bindParam(':status',   $status);
+        $stmt->bindParam(':user_id', $user->user_id);
+        $stmt->bindParam(':friend_id', $user->friend_id);
         if($stmt->execute()){
             $response = ['status'=>1,'message'=>'Record updated successfully.'];
         }else{

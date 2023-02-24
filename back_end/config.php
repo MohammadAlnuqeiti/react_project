@@ -7,7 +7,7 @@ class crud{
     public static function connect(){
         try{
 
-        $con=new PDO('mysql:localhost=localhost;dbname=pro_react','root','');
+        $con=new PDO('mysql:localhost=localhost;dbname=react_platform_project','root','');
 
        
         return $con;
