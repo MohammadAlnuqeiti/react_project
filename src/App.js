@@ -9,6 +9,7 @@ import Contact from './publicUser/contact';
 import ListUser from './component/users';
 import AllGroup from './component/allGroup';
 import MyGroup from './component/myGroup';
+import Group from './component/groupPage';
 import './App.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/users" element={ <ListUser/> } />
           <Route path="/groups" element={ <AllGroup/> } />
           <Route path="/myGroups" element={ <MyGroup/> } />
+          <Route path="/groups/:id/show" element={ <Group/> } />
           <Route path="/user/about" element={ <About/> } />
           <Route path="/user/contact" element={ <Contact/> } />
           <Route path="/user/login" element={ <LoginUser/> } />

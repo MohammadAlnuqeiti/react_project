@@ -15,13 +15,18 @@ export default function AllGroup() {
 
   const [groups , setGroups] = useState([]);
   const [pendingMembers,setPendingMembers] = useState([]);
+  const [acceptedMembers,setAcceptedMembers] = useState([]);
 
 
   useEffect(()=>{
     getGroups();
     getPendingMempers();
+    getAcceptedMempers();
     
 } , [])
+
+
+// لعرض كل الجروبات في الموقع
 
 function getGroups(){
   axios.get(`http://localhost:80/react_project/back_end/groups.php/`)
@@ -33,8 +38,7 @@ function getGroups(){
 }
 
 
-
-// لعرض كل الجروبات في الموقع
+// لاضافة عضو لجروب معين
 const AddToGroup = (groupId) => {
   let inputs = {user_id:current_ID , group_id:groupId};
   axios.post(`http://localhost:80/react_project/back_end/membersGroup.php/save`,inputs)
@@ -60,6 +64,21 @@ const AddToGroup = (groupId) => {
             // setPendingMempers(respone.data)
         })
     }
+
+         //للجروبات accepted لعرض كل طلبات المستخدم اللي حالتهم 
+         const getAcceptedMempers = () => {
+
+          axios.get(`http://localhost:80/react_project/back_end/getAcceptedMember.php/${current_ID}`)
+          .then((respone)=>{
+              console.log(respone.data);
+              let acceptedMembers = respone.data.map((ele)=>{
+                  return ele.group_id
+              })
+              console.log(acceptedMembers);
+              setAcceptedMembers(acceptedMembers);
+              // setPendingMempers(respone.data)
+          })
+      }
 
   // لحذب طلب الاضافة 
     const removeRequest = (GroupId) => {
@@ -106,28 +125,47 @@ const AddToGroup = (groupId) => {
                         <td  style={{paddingLeft : "10px" }}>{element.group_name}</td>
                         <td style={{paddingLeft : "10px" }}><img width={240} height={140} alt="" src={require(`./image/${element.group_image}`)} /></td>
                         {(() => {
-                            if (pendingMembers.includes(element.group_id)){
-                              return ( 
+                            if (pendingMembers.includes(element.group_id) || acceptedMembers.includes(element.group_id) ){
+                                if(pendingMembers.includes(element.group_id)){
+                                  return ( 
                                     <td>
                                     <Link>
                                         <Button variant="primary" onClick={()=>removeRequest(element.group_id)}>remove request</Button>
                                     </Link>
                                     </td>
                               )
+
+                                }
+                                if(acceptedMembers.includes(element.group_id)){
+                                    return (
+                                        <td>
+
+                                        <Link to={`/groups/${element.group_id}/show`}>
+                                            <Button variant="primary">show group</Button>
+                                        </Link>
+
+
+                                    
+                                        </td>
+                                    )
+
+                                }
+                              
                              
                             }else{
-                                return ( 
-                                  <td>
-                    
-                                  <Link>
-                                      <Button variant="primary" onClick={()=>AddToGroup(element.group_id)}>Add</Button>
-                                  </Link>
-                              
-                              </td>
-                                )
-                            }
+                              return ( 
+                                <td>
+                  
+                                <Link>
+                                    <Button variant="primary" onClick={()=>AddToGroup(element.group_id)}>Add</Button>
+                                </Link>
+                            
+                            </td>
+                              )
+                          }
               
             })()}
+              
                        
                     </tr>
                 })}

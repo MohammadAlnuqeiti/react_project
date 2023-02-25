@@ -13,6 +13,7 @@ export default function MyGroup() {
 const current_ID = JSON.parse(localStorage.getItem('id'));
 
 const [groups , setGroups] = useState([]);
+const [myAcceptrdGroups , setMyAcceptrdGroups] = useState([]);
 
 const [text, setText] = useState("");
 const [file, setFile] = useState(null);
@@ -39,6 +40,7 @@ const handleSubmit = async (e) => {
 
     useEffect(()=>{
         getGroups();
+        getMyAcceptrdGroups();
     } , [])
 
     function getGroups(){
@@ -54,6 +56,16 @@ const handleSubmit = async (e) => {
       axios.delete(`http://localhost:80/react_project/back_end/groups.php/${id}`).then(function(response){
         getGroups();
       })
+    }
+
+    const getMyAcceptrdGroups = () => {
+
+      axios.get(`http://localhost:80/react_project/back_end/getMyGroupAcceptedStatus.php/${current_ID}`)
+      .then(response => {
+          console.log(response.data)
+          setMyAcceptrdGroups(response.data);
+      })
+
     }
 
     let i = 1;
@@ -84,6 +96,7 @@ const handleSubmit = async (e) => {
 
     </div>
     <div className="container m-5">
+      <h1>My groups</h1>
     <Table striped className="m-auto" style={{textAlign:"center"}}>
     <thead>
           <tr>
@@ -91,6 +104,7 @@ const handleSubmit = async (e) => {
             <th scope="col">Admin</th>
             <th scope="col">Name of Group</th>
             <th scope="col">Image</th>
+            <th scope="col">show group</th>
             <th scope="col">Delete</th>
           </tr>
         </thead>
@@ -110,11 +124,47 @@ const handleSubmit = async (e) => {
                         <td  style={{paddingLeft : "10px" }}>{element.group_name}</td>
                         <td style={{paddingLeft : "10px" }}><img width={240} height={140} alt="" src={require(`./image/${element.group_image}`)} /></td>
                         
+                        <td>    
+                                <Link to={`/groups/${element.group_id}/show`}>
+                                    <Button variant="primary">show group</Button>
+                                </Link>
+                        </td>
                         <td>
                             <Link>
                                 <Button variant="danger" onClick={() => {deleteGroup(element.group_id)}} >Delete</Button>
                             </Link>
                         </td>
+                    </tr>
+                })}
+        </tbody>
+      </Table>
+      </div>
+    <div className="container m-5">
+      <h1>Groups</h1>
+    <Table striped className="m-auto" style={{textAlign:"center"}}>
+    <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name of Group</th>
+            <th scope="col">Image</th>
+            <th scope="col">show group</th>
+          </tr>
+        </thead>
+        <tbody>
+                { myAcceptrdGroups.map((element,index) => {
+                    return <tr key={index}>
+                        
+                        {console.log(element.id)}
+                        <td  style={{paddingLeft : "10px" }}>{i++}</td>
+                        <td  style={{paddingLeft : "10px" }}>{element.group_name}</td>
+                        <td style={{paddingLeft : "10px" }}><img width={240} height={140} alt="" src={require(`./image/${element.group_image}`)} /></td>
+                        
+                        <td>    
+                                <Link to={`/groups/${element.group_id}/show`}>
+                                    <Button variant="primary">show group</Button>
+                                </Link>
+                        </td>
+                    
                     </tr>
                 })}
         </tbody>
