@@ -153,7 +153,7 @@ const handleSubmit = async (e) => {
         <tbody>
                 { myAcceptrdGroups.map((element,index) => {
                     return <tr key={index}>
-                        
+                      
                         {console.log(element.id)}
                         <td  style={{paddingLeft : "10px" }}>{i++}</td>
                         <td  style={{paddingLeft : "10px" }}>{element.group_name}</td>

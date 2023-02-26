@@ -190,18 +190,18 @@ export default function HomeUser() {
       document.getElementById(id).focus();
     }
 
+    
+    const cancleCommentEdit = (id) => {
+      document.getElementById(`comment${id}`).style.display = 'block';
+      document.getElementById(`editCommentForm${id}`).style.display = 'none';
+      document.getElementById(`editCommentBTN${id}`).style.display = 'inline-block';
+      
+    }
     const canclePostEdit = (id) => {
       document.getElementById(`post${id}`).style.display = 'block';
       document.getElementById(`editPostForm${id}`).style.display = 'none';
       document.getElementById(`editPostBTN${id}`).style.display = 'inline-block';
       document.getElementById(`imgPost${id}`).style.display = 'block';
-    }
-
-    const cancleCommentEdit = (id) => {
-      document.getElementById(`comment${id}`).style.display = 'block';
-      document.getElementById(`editCommentForm${id}`).style.display = 'none';
-      document.getElementById(`editCommentBTN${id}`).style.display = 'inline-block';
-
     }
 
 
@@ -376,16 +376,15 @@ export default function HomeUser() {
                     )}})}
                   </div>
                   <div className="card-footer py-3 border-0" style={{backgroundColor: '#f8f9fa'}}>
-                  <div className="d-flex flex-start w-100">
-                    <img className="rounded-circle shadow-1-strong me-3" src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp" alt="avatar" width={40} height={40} />
-                    <form className="form-outline w-100" onSubmit={handleCreateComment}>
-                      <textarea className="form-control" id={post.post_id} name={current_ID} rows={4} style={{background: '#fff'}} onChange={handleChange}/>
-                      <button type="submit" className="btn btn-primary btn-sm">Post comment</button>
-                    </form>
+                      <div className="d-flex flex-start w-100">
+                        <img className="rounded-circle shadow-1-strong me-3" src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp" alt="avatar" width={40} height={40} />
+                        <form className="form-outline w-100" onSubmit={handleCreateComment}>
+                          <textarea className="form-control" id={post.post_id} name={current_ID} rows={4} style={{background: '#fff'}} onChange={handleChange}/>
+                          <button type="submit" className="btn btn-primary btn-sm">Post comment</button>
+                        </form>
+                      </div>
                   </div>
-                  </div>
-                  <div className="float-end mt-2 pt-1">
-                  </div>
+                  
                 </div>
               </div>
             </div>
