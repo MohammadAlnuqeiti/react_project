@@ -11,7 +11,6 @@ export default function Header() {
         window.localStorage.removeItem('email');
         window.localStorage.removeItem('id');
         window.location.pathname = "/user/login";
-    
       }
   return (
     <>
